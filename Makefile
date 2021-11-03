@@ -756,6 +756,10 @@ KBUILD_CPPFLAGS += -Qunused-arguments
 # Quiet clang warning: comparison of unsigned expression < 0 is always false
 KBUILD_CFLAGS += $(call cc-disable-warning, tautological-compare)
 endif
+ifdef CONFIG_CC_IS_GCC
+# Too much noisy and harmless to kill
+KBUILD_CFLAGS += $(call cc-disable-warning, format)
+endif
 
 # These warnings generated too much noise in a regular build.
 # Use make W=1 to enable them (see scripts/Makefile.extrawarn)
