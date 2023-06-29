@@ -44,10 +44,6 @@ struct cpu_cooling_ops {
 struct thermal_cooling_device *
 cpufreq_cooling_register(struct cpufreq_policy *policy);
 
-struct thermal_cooling_device *
-cpufreq_platform_cooling_register(struct cpufreq_policy *policy,
-					struct cpu_cooling_ops *ops);
-
 /**
  * cpufreq_platform_cooling_register - create cpufreq cooling device with
  * additional platform specific mitigation function.
@@ -59,6 +55,10 @@ cpufreq_platform_cooling_register(struct cpufreq_policy *policy,
 struct thermal_cooling_device *
 cpufreq_platform_cooling_register(struct cpufreq_policy *policy,
 					struct cpu_cooling_ops *ops);
+
+#ifdef CONFIG_ARCH_QCOM
+void cpu_limits_set_level(unsigned int cpu, unsigned int max_freq);
+#endif
 
 /**
  * cpufreq_cooling_unregister - function to remove cpufreq cooling device.
@@ -77,7 +77,7 @@ static inline struct thermal_cooling_device *
 cpufreq_platform_cooling_register(struct cpufreq_policy *policy,
 					struct cpu_cooling_ops *ops)
 {
-	return NULL;
+	return ERR_PTR(-ENOSYS);
 }
 
 static inline
@@ -98,14 +98,14 @@ of_cpufreq_cooling_register(struct cpufreq_policy *policy);
 static inline struct thermal_cooling_device *
 of_cpufreq_cooling_register(struct cpufreq_policy *policy)
 {
-	return NULL;
+	return ERR_PTR(-ENOSYS);
 }
 
 static inline struct thermal_cooling_device *
 cpufreq_platform_cooling_register(struct cpufreq_policy *policy,
 					struct cpu_cooling_ops *ops)
 {
-	return NULL;
+	return ERR_PTR(-ENOSYS);
 }
 #endif /* defined(CONFIG_THERMAL_OF) && defined(CONFIG_CPU_THERMAL) */
 
