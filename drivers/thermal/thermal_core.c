@@ -25,7 +25,7 @@
 #ifdef CONFIG_ARCH_QCOM
 #include <linux/cpu_cooling.h>
 #ifdef CONFIG_DRM
-#include <drm/drm_panel.h>
+#include <drm/drm_notifier_mi.h>
 #endif
 #endif
 
@@ -1955,13 +1955,13 @@ static void destroy_thermal_message_node(void)
 static const char *get_screen_state_name(int mode)
 {
 	switch (mode) {
-	case DRM_BLANK_UNBLANK:
+	case MI_DRM_BLANK_UNBLANK:
 		return "On";
-	case DRM_BLANK_LP1:
+	case MI_DRM_BLANK_LP1:
 		return "Doze";
-	case DRM_BLANK_LP2:
+	case MI_DRM_BLANK_LP2:
 		return "DozeSuspend";
-	case DRM_BLANK_POWERDOWN:
+	case MI_DRM_BLANK_POWERDOWN:
 		return "Off";
 	default:
 		return "Unknown";
@@ -1971,20 +1971,20 @@ static const char *get_screen_state_name(int mode)
 static int screen_state_for_thermal_callback(struct notifier_block *nb,
 					     unsigned long val, void *data)
 {
-	struct drm_notify_data *evdata = data;
+	struct mi_drm_notifier *evdata = data;
 	unsigned int blank;
 
-	if (val != DRM_EVENT_BLANK || !evdata || !evdata->data)
+	if (val != MI_DRM_EVENT_BLANK || !evdata || !evdata->data)
 		return 0;
 
 	blank = *(int *)(evdata->data);
 	switch (blank) {
-	case DRM_BLANK_UNBLANK:
+	case MI_DRM_BLANK_UNBLANK:
 		sm.screen_state = 1;
 		break;
-	case DRM_BLANK_LP1:
-	case DRM_BLANK_LP2:
-	case DRM_BLANK_POWERDOWN:
+	case MI_DRM_BLANK_LP1:
+	case MI_DRM_BLANK_LP2:
+	case MI_DRM_BLANK_POWERDOWN:
 		sm.screen_state = 0;
 		break;
 	default:
@@ -2044,7 +2044,7 @@ static int __init thermal_init(void)
 
 #ifdef CONFIG_DRM
 	sm.thermal_notifier.notifier_call = screen_state_for_thermal_callback;
-	if (drm_register_client(&sm.thermal_notifier) < 0) {
+	if (mi_drm_register_client(&sm.thermal_notifier) < 0) {
 		pr_warn("Thermal: register screen state callback failed\n");
 	}
 #endif
@@ -2070,7 +2070,7 @@ error:
 static void thermal_exit(void)
 {
 #if defined(CONFIG_ARCH_QCOM) && defined(CONFIG_DRM)
-	drm_unregister_client(&sm.thermal_notifier);
+	mi_drm_unregister_client(&sm.thermal_notifier);
 #endif
 	unregister_pm_notifier(&thermal_pm_nb);
 	of_thermal_destroy_zones();
