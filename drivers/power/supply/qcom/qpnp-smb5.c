@@ -1924,7 +1924,7 @@ static int smb5_usb_port_get_prop(struct power_supply *psy,
 		rc = smblib_get_prop_input_current_settled(chg, val);
 		break;
 	default:
-		pr_err_ratelimited("Get prop %d is not supported in pc_port\n",
+		pr_debug_ratelimited("Get prop %d is not supported in pc_port\n",
 				psp);
 		return -EINVAL;
 	}
@@ -3220,7 +3220,7 @@ static int smb5_batt_get_prop(struct power_supply *psy,
 		rc = smblib_night_charging_func(chg, val);
 		break;
 	default:
-		pr_err("batt power supply prop %d not supported\n", psp);
+		pr_debug("batt power supply prop %d not supported\n", psp);
 		return -EINVAL;
 	}
 
@@ -4930,7 +4930,7 @@ static int smb5_show_charger_status(struct smb5 *chip)
 	}
 	batt_charge_type = val.intval;
 
-	pr_info("SMB5 status - usb:present=%d type=%d batt:present = %d health = %d charge = %d\n",
+	pr_debug("SMB5 status - usb:present=%d type=%d batt:present = %d health = %d charge = %d\n",
 		usb_present, chg->real_charger_type,
 		batt_present, batt_health, batt_charge_type);
 	return rc;
